@@ -12,3 +12,66 @@ In generic crud application we need the API’s as follows:
 3. GET todos/{id}
 4. PUT todos/{id}
 5. DELETE todos/{id}
+
+## CREATE TODO
+```http
+POST /api/v1/todos
+```
+### Request
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `title` | `string` | **Required**. Your Title |
+| `completed` | `boolean` |  |
+### Response
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `message` | `string` | |
+| `resourceId` | `integer` | Returned ID |
+| `status` | `integer` | 201 - Created |
+
+## FETCH ALL TODO
+```http
+GET /api/v1/todos
+```
+### Response
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `id` | `integer` | |
+| `title` | `string` | |
+| `completed` | `boolean` | |
+| `status` | `integer` | |
+
+## FETCH A SINGLE TODO
+```http
+GET /api/v1/todos/:id
+```
+### Response
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `id` | `integer` | |
+| `title` | `string` | |
+| `completed` | `boolean` | |
+| `status` | `integer` | |
+## UPDATE A TODO
+```http
+PUT /api/v1/todos/:id
+```
+### Request
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `title` | `string` | **Required**. Your Title |
+| `completed` | `boolean` |  |
+### Response
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `message` | `string` | |
+| `status` | `integer` | 200 - Updated |
+## DELETE A TODO
+```http
+DELETE /api/v1/todos/:id
+```
+### Response
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `message` | `string` | |
+| `status` | `integer` | 200 - DELETED |
