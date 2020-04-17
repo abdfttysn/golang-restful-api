@@ -13,7 +13,7 @@ In generic crud application we need the API’s as follows:
 4. PUT todos/{id}
 5. DELETE todos/{id}
 
-## CREATE TODO
+## Create Todo
 ```http
 POST /api/v1/todos
 ```
@@ -29,7 +29,7 @@ POST /api/v1/todos
 | `resourceId` | `integer` | Returned ID |
 | `status` | `integer` | 201 - Created |
 
-## FETCH ALL TODO
+## Fetch All Todo
 ```http
 GET /api/v1/todos
 ```
@@ -41,7 +41,7 @@ GET /api/v1/todos
 | `completed` | `boolean` | |
 | `status` | `integer` | |
 
-## FETCH A SINGLE TODO
+## Fetch a Single Todo
 ```http
 GET /api/v1/todos/:id
 ```
@@ -52,7 +52,7 @@ GET /api/v1/todos/:id
 | `title` | `string` | |
 | `completed` | `boolean` | |
 | `status` | `integer` | |
-## UPDATE A TODO
+## Update Todo
 ```http
 PUT /api/v1/todos/:id
 ```
@@ -66,7 +66,7 @@ PUT /api/v1/todos/:id
 | :--- | :--- | :--- |
 | `message` | `string` | |
 | `status` | `integer` | 200 - Updated |
-## DELETE A TODO
+## Delete Todo
 ```http
 DELETE /api/v1/todos/:id
 ```
