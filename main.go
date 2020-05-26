@@ -1,11 +1,15 @@
 package main
 
 import (
+	"net/http"
+	"strconv"
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"net/http"
-	"strconv"
+
+	jwt "github.com/dgrijalva/jwt-go"
 )
 
 var db *gorm.DB
@@ -23,7 +27,17 @@ type (
 		Title string `json:"title"`
 		Completed bool `json:"completed"`
 	}
+	// 
+	Credential struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
 )
+
+var access = Credential{
+	Username: "root",
+	Password: "root123",
+}
 
 func init() {
 	// open a db connection
@@ -43,16 +57,76 @@ func main() {
 	// 	fmt.Println("Hi gaes!")
 	// })
 
+
+	router.POST("/api/v1/login", loginHandler)
+
 	v1 := router.Group("/api/v1/todos") 
 	{
-		v1.POST("/", createTodo)
-		v1.GET("/", fetchAllTodo)
-		v1.GET("/:id", fetchSingleTodo)
-		v1.PUT("/:id", updateTodo)
-		v1.DELETE("/:id", deleteTodo)
+		v1.POST("/", auth, createTodo)
+		v1.GET("/", auth, fetchAllTodo)
+		v1.GET("/:id", auth, fetchSingleTodo)
+		v1.PUT("/:id", auth, updateTodo)
+		v1.DELETE("/:id", auth, deleteTodo)
 	}
 
 	router.Run()
+}
+
+func loginHandler(c *gin.Context) {
+	var user Credential
+	err := c.Bind(&user)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"message": "can't bind struct",
+		})
+	}
+	if user.Username != access.Username {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"status":  http.StatusUnauthorized,
+			"message": "wrong username or password",
+		})
+	} else {
+		if user.Password != access.Password {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"status":  http.StatusUnauthorized,
+				"message": "wrong username or password",
+			})
+		}
+	}
+	sign := jwt.New(jwt.GetSigningMethod("HS256"))
+	token, err := sign.SignedString([]byte("secret"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		c.Abort()
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"token": token,
+	})
+}
+
+func auth(c *gin.Context) {
+	tokenString := c.Request.Header.Get("Authorization")
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if jwt.GetSigningMethod("HS256") != token.Method {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return []byte("secret"), nil
+	})
+
+	if token != nil && err == nil {
+		fmt.Println("token verified")
+	} else {
+		result := gin.H{
+			"message": "not authorized",
+			"error":   err.Error(),
+		}
+		c.JSON(http.StatusUnauthorized, result)
+		c.Abort()
+	}
 }
 	
 // createTodo add new todo
